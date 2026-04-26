@@ -10,6 +10,31 @@ Estrutura padrão para iniciar **qualquer** projeto de software seguindo o fluxo
 > **🚀 Quer começar a usar agora?** Leia o **[USAGE.md](./USAGE.md)** —
 > manual prático "do zero ao deploy" com exemplos do dia a dia.
 
+## Stack obrigatória
+
+Todo projeto criado a partir deste template **já vem** com:
+
+| Camada | Tecnologia | Caminho |
+|---|---|---|
+| Frontend | **Vue 3 + PrimeVue 4** (Aura) + Vite + TypeScript + Pinia | `apps/frontend/` |
+| Backend | **FastAPI** + Pydantic v2 + SQLAlchemy 2 + Alembic + Argon2id | `apps/backend/` |
+| Banco | **Postgres 16** com `pgcrypto` (audit hash chain) | serviço `db` no compose |
+| Orquestração | **Docker Compose** (dev + prod overrides) | `docker-compose*.yml` |
+| Logs | structlog → tabela `tech_logs` (alimenta `/admin/logs`) | `app.logging_config` |
+| Auditoria | `audit_events` append-only com hash chain (sha256) | `app.audit` |
+
+Trocar qualquer item dessa lista exige **ADR** explícito (`docs/adr/`). O
+objetivo é evitar redecidir a stack todo projeto.
+
+```bash
+# subir tudo localmente
+make setup    # cria .env das duas apps
+make up       # docker compose up -d --build
+# Frontend: http://localhost:5173
+# Backend:  http://localhost:8000  (docs em /docs)
+# Postgres: localhost:5432  (user app / pass app)
+```
+
 ---
 
 ## 1. Fluxo end-to-end
@@ -38,11 +63,36 @@ correspondentes neste repositório.
 .
 ├── AGENTS.md                       # Instruções para qualquer agente de IA
 ├── README.md                       # Este arquivo
+├── USAGE.md                        # Manual prático do dia a dia
 ├── SECURITY.md                     # Política de divulgação responsável
 ├── CONTRIBUTING.md                 # Como contribuir / fluxo de PR
 ├── CODEOWNERS
+├── Makefile                        # `make help`
+├── docker-compose.yml              # Stack de desenvolvimento
+├── docker-compose.prod.yml         # Override de produção
 ├── .editorconfig
 ├── .gitignore
+│
+├── apps/
+│   ├── backend/                    # FastAPI + SQLAlchemy 2 + Alembic
+│   │   ├── app/                    # main.py, config, db, security, audit, routers/
+│   │   ├── alembic/                # migrations + trigger append-only
+│   │   ├── tests/
+│   │   ├── pyproject.toml
+│   │   ├── Dockerfile              # multi-stage (dev + prod)
+│   │   └── .env.example
+│   │
+│   └── frontend/                   # Vue 3 + PrimeVue 4 + Vite + TS
+│       ├── src/
+│       │   ├── views/              # Login, Home, Manual, AdminLogs, AdminAuditLogs
+│       │   ├── components/         # AppShell etc.
+│       │   ├── stores/             # Pinia (auth)
+│       │   ├── api/                # cliente HTTP fetch + ApiError
+│       │   └── styles/tokens.css
+│       ├── package.json
+│       ├── Dockerfile              # multi-stage (dev + nginx prod)
+│       ├── nginx.conf              # headers de segurança espelhados
+│       └── .env.example
 │
 ├── .cursor/
 │   └── rules/                      # Skills do Cursor por fase

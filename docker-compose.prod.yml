@@ -1,0 +1,27 @@
+# Override de produção: usa imagens em modo prod (nginx servindo o build,
+# uvicorn sem --reload, sem volumes de código). Segredos via .env real
+# ou cofre — nunca commitar .env de prod.
+
+services:
+  backend:
+    build:
+      context: ./apps/backend
+      target: prod
+    volumes: []
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      target: prod
+    ports:
+      - "8080:8080"
+    volumes: []
+
+  db:
+    ports: []  # Postgres não exposto em prod

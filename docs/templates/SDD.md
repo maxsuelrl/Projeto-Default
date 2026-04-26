@@ -24,12 +24,25 @@ paths: {}
 - Política de retenção & LGPD.
 
 ## 4. Arquitetura
+
+> **Stack padrão deste template** (ver `.cursor/rules/30-development.mdc`).
+> Mudanças exigem **ADR**.
+
 ```mermaid
 flowchart LR
-  user-->web-->api-->db[(DB)]
-  api-->cache[(Cache)]
-  api-->queue[(Fila)]
+  user[Usuário] -->|"https"| fe["apps/frontend\nVue 3 + PrimeVue 4"]
+  fe -->|"/api"| be["apps/backend\nFastAPI + Pydantic v2"]
+  be -->|"SQLAlchemy 2"| db[("Postgres 16\n+ pgcrypto")]
+  be -->|"stdout JSON"| obs[("OTel Collector\n→ Loki/Datadog/...")]
+  be -->|"append-only"| audit[("audit_events\n+ hash chain")]
 ```
+
+- Frontend (`apps/frontend`): Vue 3 + PrimeVue 4 (preset Aura) + Vite + TS + Pinia.
+- Backend (`apps/backend`): FastAPI + Pydantic v2 + SQLAlchemy 2 + Alembic + Argon2id + structlog.
+- Banco: Postgres 16 com extensão `pgcrypto`. Tabela `audit_events` com trigger
+  bloqueando `UPDATE/DELETE` (append-only) e cadeia `prev_hash → hash` (sha256).
+- Docker Compose para dev (`docker-compose.yml`) e prod
+  (`docker-compose.prod.yml`).
 - ADRs relacionados: `docs/adr/ADR-0001-*`.
 
 ## 5. NFRs

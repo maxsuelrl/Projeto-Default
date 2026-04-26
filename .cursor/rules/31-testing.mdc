@@ -3,6 +3,8 @@ description: Fase 3b — Testes (unit, integração, contrato, E2E, a11y, perfor
 globs:
   - "**/*.test.*"
   - "**/*.spec.*"
+  - "apps/backend/tests/**/*"
+  - "apps/frontend/src/__tests__/**/*"
   - "tests/**/*"
   - "e2e/**/*"
 ---

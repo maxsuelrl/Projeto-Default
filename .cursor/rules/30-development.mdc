@@ -10,6 +10,19 @@ T-xxx", "implementar T-xxx") ao codificar **uma tarefa** do
 `docs/backlog.md`. Ela **não** é sempre ativa para evitar poluir o contexto
 em tarefas pequenas (ex.: ajuste de copy, fix trivial).
 
+## Stack obrigatória (não negociar sem ADR)
+
+| Camada | Tech | Onde |
+|---|---|---|
+| Frontend | Vue 3 + **PrimeVue 4 (preset Aura)** + Vite + TypeScript + Pinia | `apps/frontend/` |
+| Backend | **FastAPI** + Pydantic v2 + SQLAlchemy 2 + Alembic + Argon2id | `apps/backend/` |
+| Banco | **Postgres 16** (com `pgcrypto`) | service `db` no compose |
+| Orquestração | **Docker Compose** | `docker-compose.yml` + `docker-compose.prod.yml` |
+| Logs | structlog (backend, JSON) → tabela `tech_logs` + stdout | `app.logging_config` |
+| Audit | tabela `audit_events` append-only + hash chain (sha256) | `app.audit.emit_audit()` |
+
+Se a tarefa **mudar** essa stack, abra **ADR** antes (ex.: `ADR-0010-trocar-banco.md`).
+
 ## Procedimento
 
 1. Leia a tarefa (ID `T-xxx`) e o trecho do SDD relacionado.
