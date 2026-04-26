@@ -8,7 +8,11 @@ const router = useRouter();
   <div class="page">
     <h1>403</h1>
     <p>Você não tem permissão para acessar esta área.</p>
-    <Button icon="pi pi-home" label="Voltar" @click="router.push('/')" />
+    <Button
+      icon="pi pi-home"
+      label="Voltar"
+      @click="router.push('/')"
+    />
   </div>
 </template>
 

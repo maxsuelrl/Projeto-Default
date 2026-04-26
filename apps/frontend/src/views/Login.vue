@@ -40,18 +40,38 @@ async function submit(): Promise<void> {
 <template>
   <div class="login">
     <Card class="login-card">
-      <template #title>Entrar</template>
+      <template #title>
+        Entrar
+      </template>
       <template #content>
-        <form @submit.prevent="submit" class="form">
+        <form
+          class="form"
+          @submit.prevent="submit"
+        >
           <label class="field">
             <span>E-mail</span>
-            <InputText v-model="email" type="email" autocomplete="email" required />
+            <InputText
+              v-model="email"
+              type="email"
+              autocomplete="email"
+              required
+            />
           </label>
           <label class="field">
             <span>Senha</span>
-            <Password v-model="password" :feedback="false" toggle-mask required />
+            <Password
+              v-model="password"
+              :feedback="false"
+              toggle-mask
+              required
+            />
           </label>
-          <Button type="submit" label="Entrar" :loading icon="pi pi-sign-in" />
+          <Button
+            type="submit"
+            label="Entrar"
+            :loading
+            icon="pi pi-sign-in"
+          />
         </form>
       </template>
     </Card>

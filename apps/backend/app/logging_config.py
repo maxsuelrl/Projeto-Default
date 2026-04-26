@@ -48,7 +48,16 @@ def _add_static_fields(service: str, env: str) -> Any:
     return _proc
 
 
-_PII_KEYS = {"password", "senha", "cpf", "cardNumber", "card_number", "cvv", "token", "authorization"}
+_PII_KEYS = {
+    "password",
+    "senha",
+    "cpf",
+    "cardNumber",
+    "card_number",
+    "cvv",
+    "token",
+    "authorization",
+}
 
 
 def _drop_pii(_logger: Any, _name: str, event_dict: dict[str, Any]) -> dict[str, Any]:

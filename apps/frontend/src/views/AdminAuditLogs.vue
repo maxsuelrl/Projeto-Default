@@ -56,35 +56,80 @@ onMounted(load);
     <h1>Auditoria</h1>
     <p class="muted">
       Trilha imutável de ações do usuário (append-only, hash chain).
-      Para erros técnicos do sistema, ver <RouterLink to="/admin/logs">/admin/logs</RouterLink>.
+      Para erros técnicos do sistema, ver <RouterLink to="/admin/logs">
+        /admin/logs
+      </RouterLink>.
     </p>
 
     <div class="filters">
-      <InputText v-model="action" placeholder="action (ex.: auth.login)" />
-      <InputText v-model="q" placeholder="Buscar (reason)" />
-      <Button icon="pi pi-refresh" label="Atualizar" @click="load" />
-      <Button icon="pi pi-shield" label="Verificar integridade" severity="secondary" @click="verify" />
+      <InputText
+        v-model="action"
+        placeholder="action (ex.: auth.login)"
+      />
+      <InputText
+        v-model="q"
+        placeholder="Buscar (reason)"
+      />
+      <Button
+        icon="pi pi-refresh"
+        label="Atualizar"
+        @click="load"
+      />
+      <Button
+        icon="pi pi-shield"
+        label="Verificar integridade"
+        severity="secondary"
+        @click="verify"
+      />
     </div>
 
-    <DataTable :value="items" :loading data-key="id" striped-rows>
-      <Column field="ts" header="Quando">
-        <template #body="{ data }">{{ new Date(data.ts).toLocaleString() }}</template>
-      </Column>
-      <Column header="Ator">
-        <template #body="{ data }">{{ data.actor?.email ?? data.actor?.userId ?? "—" }}</template>
-      </Column>
-      <Column field="action" header="Ação" />
-      <Column header="Entidade">
-        <template #body="{ data }">{{ data.entity?.type }}/{{ data.entity?.id }}</template>
-      </Column>
-      <Column field="outcome" header="Resultado">
+    <DataTable
+      :value="items"
+      :loading
+      data-key="id"
+      striped-rows
+    >
+      <Column
+        field="ts"
+        header="Quando"
+      >
         <template #body="{ data }">
-          <Tag :severity="data.outcome === 'ok' ? 'success' : 'danger'" :value="data.outcome" />
+          {{ new Date(data.ts).toLocaleString() }}
         </template>
       </Column>
-      <Column field="reason" header="Motivo" />
+      <Column header="Ator">
+        <template #body="{ data }">
+          {{ data.actor?.email ?? data.actor?.userId ?? "—" }}
+        </template>
+      </Column>
+      <Column
+        field="action"
+        header="Ação"
+      />
+      <Column header="Entidade">
+        <template #body="{ data }">
+          {{ data.entity?.type }}/{{ data.entity?.id }}
+        </template>
+      </Column>
+      <Column
+        field="outcome"
+        header="Resultado"
+      >
+        <template #body="{ data }">
+          <Tag
+            :severity="data.outcome === 'ok' ? 'success' : 'danger'"
+            :value="data.outcome"
+          />
+        </template>
+      </Column>
+      <Column
+        field="reason"
+        header="Motivo"
+      />
       <Column header="Hash">
-        <template #body="{ data }"><code class="hash">{{ data.hash.slice(0, 12) }}…</code></template>
+        <template #body="{ data }">
+          <code class="hash">{{ data.hash.slice(0, 12) }}…</code>
+        </template>
       </Column>
     </DataTable>
   </AppShell>

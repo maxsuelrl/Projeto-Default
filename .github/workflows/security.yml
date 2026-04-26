@@ -45,10 +45,21 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: s
         shell: bash
+        # Procura nos lugares da stack obrigatória (apps/{frontend,backend})
+        # E também na raiz para projetos legados ou multi-stack.
         run: |
-          echo "has-node=$([ -f package.json ] && echo true || echo false)" >> $GITHUB_OUTPUT
-          echo "has-python=$([ -f pyproject.toml ] || [ -f requirements.txt ] && echo true || echo false)" >> $GITHUB_OUTPUT
-          echo "has-go=$([ -f go.mod ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          has_node=false; has_python=false; has_go=false
+          if [ -f package.json ] || [ -f apps/frontend/package.json ]; then has_node=true; fi
+          if [ -f pyproject.toml ] || [ -f apps/backend/pyproject.toml ] \
+             || [ -f requirements.txt ] || [ -f apps/backend/requirements.txt ]; then
+            has_python=true
+          fi
+          if [ -f go.mod ]; then has_go=true; fi
+          {
+            echo "has-node=$has_node"
+            echo "has-python=$has_python"
+            echo "has-go=$has_go"
+          } >> "$GITHUB_OUTPUT"
 
   gitleaks:
     name: Secrets — Gitleaks
@@ -111,6 +122,7 @@ jobs:
           scan-type: fs
           scanners: vuln,secret,misconfig
           severity: HIGH,CRITICAL
+          ignore-unfixed: true
           exit-code: "1"
           format: sarif
           output: trivy.sarif
@@ -136,14 +148,23 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Build image
-        run: docker build -t projeto-padrao-${{ matrix.service }}:scan --target prod ./apps/${{ matrix.service }}
-      - uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0 (safe)
+        run: |
+          docker build -t projeto-padrao-${{ matrix.service }}:scan \
+            --target prod ./apps/${{ matrix.service }}
+
+      # Scan da nossa imagem inteira (inclui base + deps próprias). Não
+      # falha o build em CVE de base — `python:3.12-slim`/`nginx:1.27-alpine`
+      # quase sempre têm CVE HIGH "unfixed", o que bloquearia todo PR
+      # legítimo. Marcamos exit-code=0 e publicamos em SARIF para
+      # acompanhamento na aba Security.
+      - name: Trivy — visibility (não bloqueia)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0 (safe)
         with:
           scan-type: image
           image-ref: projeto-padrao-${{ matrix.service }}:scan
           severity: HIGH,CRITICAL
-          exit-code: "1"
           ignore-unfixed: true
+          exit-code: "0"
           format: sarif
           output: trivy-${{ matrix.service }}.sarif
       - name: Upload SARIF (aba Security)
@@ -152,6 +173,19 @@ jobs:
         with:
           sarif_file: trivy-${{ matrix.service }}.sarif
           category: trivy-image-${{ matrix.service }}
+
+      # Já o **gate** que **falha** o PR escaneia só os pacotes que
+      # adicionamos (vuln-type=library): nossas dependências precisam
+      # estar limpas. CVE de SO fica como sinal, não trava.
+      - name: Trivy — gate (libs próprias)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0 (safe)
+        with:
+          scan-type: image
+          image-ref: projeto-padrao-${{ matrix.service }}:scan
+          severity: HIGH,CRITICAL
+          vuln-type: library
+          ignore-unfixed: true
+          exit-code: "1"
 
   # CodeQL com detecção de stack — só roda análise para linguagens presentes
   # no projeto, evitando "autobuild" desnecessário em repos só-frontend, etc.

@@ -12,16 +12,28 @@ const auth = useAuthStore();
     <p>Você está autenticado como <strong>{{ auth.role }}</strong>.</p>
     <div class="cards">
       <Card>
-        <template #title>Manual</template>
-        <template #content>Documentação do produto, sempre embutida.</template>
+        <template #title>
+          Manual
+        </template>
+        <template #content>
+          Documentação do produto, sempre embutida.
+        </template>
       </Card>
       <Card v-if="auth.hasAnyRole(['admin', 'operator'])">
-        <template #title>Logs técnicos</template>
-        <template #content>Erros, latência e requisições do sistema.</template>
+        <template #title>
+          Logs técnicos
+        </template>
+        <template #content>
+          Erros, latência e requisições do sistema.
+        </template>
       </Card>
       <Card v-if="auth.hasAnyRole(['admin', 'auditor'])">
-        <template #title>Auditoria</template>
-        <template #content>Trilha imutável das ações dos usuários.</template>
+        <template #title>
+          Auditoria
+        </template>
+        <template #content>
+          Trilha imutável das ações dos usuários.
+        </template>
       </Card>
     </div>
   </AppShell>

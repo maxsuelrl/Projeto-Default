@@ -8,7 +8,11 @@ const router = useRouter();
   <div class="page">
     <h1>404</h1>
     <p>Página não encontrada.</p>
-    <Button icon="pi pi-home" label="Início" @click="router.push('/')" />
+    <Button
+      icon="pi pi-home"
+      label="Início"
+      @click="router.push('/')"
+    />
   </div>
 </template>
 
