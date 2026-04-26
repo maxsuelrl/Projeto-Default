@@ -21,13 +21,18 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 echo "→ Copiando template para $DEST..."
 mkdir -p "$DEST"
-# rsync excluindo metadados do template
 rsync -a \
   --exclude ".git" \
   --exclude "node_modules" \
   --exclude ".venv" \
   --exclude "dist" \
   --exclude "build" \
+  --exclude "__pycache__" \
+  --exclude ".pytest_cache" \
+  --exclude ".ruff_cache" \
+  --exclude ".mypy_cache" \
+  --exclude "coverage" \
+  --exclude "htmlcov" \
   "$ROOT"/ "$DEST"/
 
 cd "$DEST"
@@ -54,11 +59,18 @@ git init -q
 git add .
 git commit -q -m "chore: bootstrap a partir de Projeto-Padrão"
 
+for f in apps/backend/.env.example apps/frontend/.env.example; do
+  target="${f%.example}"
+  [[ -f "$target" ]] || cp "$f" "$target"
+done
+
 echo
 echo "✔ Pronto em $DEST"
+echo
+echo "Stack: apps/backend (FastAPI) + apps/frontend (PrimeVue) + Postgres + Docker"
 echo
 echo "Próximos passos:"
 echo "  1. Edite docs/PRD.md (idéia → PRD)"
 echo "  2. Edite docs/SDD.md (PRD → SDD)"
 echo "  3. Quebre o backlog em docs/backlog.md"
-echo "  4. Crie o repo remoto e faça o primeiro push"
+echo "  4. make setup && make up   # sobe a stack em localhost:5173"

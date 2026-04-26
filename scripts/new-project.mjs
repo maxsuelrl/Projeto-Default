@@ -34,7 +34,19 @@ if (existsSync(DEST)) {
 console.log(`→ Copiando template para ${DEST}...`);
 mkdirSync(DEST, { recursive: true });
 
-const SKIP = new Set([".git", "node_modules", ".venv", "dist", "build"]);
+const SKIP = new Set([
+  ".git",
+  "node_modules",
+  ".venv",
+  "dist",
+  "build",
+  "__pycache__",
+  ".pytest_cache",
+  ".ruff_cache",
+  ".mypy_cache",
+  "coverage",
+  "htmlcov",
+]);
 cpSync(ROOT, DEST, {
   recursive: true,
   filter: (src) => {
@@ -92,12 +104,27 @@ execSync('git commit -q -m "chore: bootstrap a partir de Projeto-Padrão"', {
   stdio: "inherit",
 });
 
+console.log(`→ Preparando stack obrigatória (FastAPI + PrimeVue + Postgres)...`);
+for (const f of ["apps/backend/.env.example", "apps/frontend/.env.example"]) {
+  const target = f.replace(".example", "");
+  if (existsSync(f) && !existsSync(target)) cpSync(f, target);
+}
+
 console.log(`
 ✔ Pronto em ${DEST}
+
+Stack já configurada:
+  apps/backend   → FastAPI 0.115 + SQLAlchemy 2 + Alembic + Postgres + Argon2
+  apps/frontend  → Vue 3 + PrimeVue 4 (Aura) + Vite + TypeScript + Pinia
+  docker-compose.yml + docker-compose.prod.yml
 
 Próximos passos:
   1. Edite docs/PRD.md (idéia → PRD; ver docs/prompts/01-prd-from-idea.md)
   2. Edite docs/SDD.md (PRD → SDD; ver docs/prompts/02-sdd-from-prd.md)
   3. Quebre o backlog em docs/backlog.md
-  4. Crie o repo remoto e faça o primeiro push
+  4. cd ${NAME} && make setup && make up    # sobe local em http://localhost:5173
+  5. Primeiro usuário admin (no host):
+       curl -X POST http://localhost:8000/auth/register \\
+         -H "content-type: application/json" \\
+         -d '{"email":"admin@example.com","password":"changeme123","role":"admin"}'
 `);

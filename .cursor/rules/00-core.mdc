@@ -33,6 +33,10 @@ Este projeto segue o template `Projeto-Padrão`. Antes de qualquer ação:
    - `/admin/logs` (logs técnicos)
    - `/admin/audit-logs` (auditoria de ações)
 
+7. **Stack obrigatória**: Vue 3 + PrimeVue 4 (`apps/frontend`) + FastAPI
+   (`apps/backend`) + Postgres + Docker. Mudanças nesta stack exigem ADR.
+   Detalhes em `30-development.mdc`.
+
 Skills mais detalhadas estão em `.cursor/rules/10-…40` e são acionadas por
 fase. Esta skill é proposital curta para não poluir o contexto em tarefas
 pequenas.
