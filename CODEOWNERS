@@ -1,0 +1,4 @@
+* @your-team
+docs/ @your-team @docs-reviewers
+.github/ @your-team @platform
+.cursor/ @your-team

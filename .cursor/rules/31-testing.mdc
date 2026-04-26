@@ -1,0 +1,42 @@
+---
+description: Fase 3b — Testes (unit, integração, contrato, E2E, a11y, performance).
+globs:
+  - "**/*.test.*"
+  - "**/*.spec.*"
+  - "tests/**/*"
+  - "e2e/**/*"
+---
+
+# Skill: QA / Testes
+
+Ative para gerar/atualizar testes de uma tarefa.
+
+## Pirâmide mínima
+
+| Camada       | Ferramenta sugerida                              | Cobertura alvo |
+|--------------|--------------------------------------------------|----------------|
+| Unit         | Vitest/Jest, Pytest, Go test, JUnit              | ≥ 80% diff     |
+| Integração   | Testcontainers, Supertest, Pytest + httpx        | rotas críticas |
+| Contrato     | Pact, Schemathesis, OpenAPI Validator            | todos os APIs  |
+| E2E          | Playwright (web) / Detox (mobile) / Cypress      | jornadas P0/P1 |
+| Acessibilidade| axe-core / Lighthouse CI                        | WCAG 2.2 AA    |
+| Performance  | k6 / Artillery / Lighthouse CI                   | budgets do SDD |
+| Visual       | Chromatic / Percy / Playwright snapshots         | telas P0       |
+
+## Regras
+
+1. Cada bug corrigido começa com **um teste que reproduz o bug**.
+2. Testes de UI cobrem: estado feliz, vazio, erro, loading e a11y.
+3. Sem `skip`/`only` em commits.
+4. Mocks só em borda (rede, relógio, FS); núcleo usa fakes determinísticos.
+5. Dados sensíveis em fixtures: anonimizar (LGPD).
+
+## Telas obrigatórias
+
+- `/manual`: smoke test (renderiza, busca funciona, links válidos).
+- `/admin/logs`: testa filtros (nível, intervalo, busca livre), paginação,
+  permissão (não-admin recebe 403) e formato JSON exportado.
+
+## Saída
+
+PR com testes verdes, cobertura do diff anexada e link do report E2E.
