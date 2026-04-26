@@ -36,7 +36,13 @@ function logout(): void {
   <div class="shell">
     <Menubar :model="items">
       <template #end>
-        <Button icon="pi pi-sign-out" text severity="secondary" label="Sair" @click="logout" />
+        <Button
+          icon="pi pi-sign-out"
+          text
+          severity="secondary"
+          label="Sair"
+          @click="logout"
+        />
       </template>
     </Menubar>
     <main class="content">

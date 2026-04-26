@@ -35,24 +35,39 @@ onMounted(async () => {
   <AppShell>
     <header class="head">
       <h1>Manual</h1>
-      <InputText v-model="query" placeholder="Buscar..." class="search" />
+      <InputText
+        v-model="query"
+        placeholder="Buscar..."
+        class="search"
+      />
     </header>
     <div class="layout">
       <aside class="toc">
         <ul>
-          <li v-for="s in sections" :key="s.id">
+          <li
+            v-for="s in sections"
+            :key="s.id"
+          >
             <button
               :class="{ active: active === s.id }"
-              @click="active = s.id"
               type="button"
-            >{{ s.title }}</button>
+              @click="active = s.id"
+            >
+              {{ s.title }}
+            </button>
           </li>
         </ul>
       </aside>
       <article class="article">
-        <h2 v-if="active">{{ sections.find(s => s.id === active)?.title }}</h2>
-        <p v-if="active">{{ content[active] }}</p>
-        <p v-else>Selecione uma seção.</p>
+        <h2 v-if="active">
+          {{ sections.find(s => s.id === active)?.title }}
+        </h2>
+        <p v-if="active">
+          {{ content[active] }}
+        </p>
+        <p v-else>
+          Selecione uma seção.
+        </p>
       </article>
     </div>
   </AppShell>

@@ -48,7 +48,8 @@ def list_audit(
         try:
             decoded = json.loads(base64.urlsafe_b64decode(cursor).decode())
             stmt = stmt.where(AuditEvent.ts < datetime.fromisoformat(decoded["ts"]))
-        except Exception:  # noqa: BLE001
+        except (ValueError, KeyError, json.JSONDecodeError):
+            # Cursor corrompido — recomeça do início. Sem PII para logar.
             pass
 
     rows = db.execute(stmt.limit(limit + 1)).scalars().all()

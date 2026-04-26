@@ -6,7 +6,9 @@ COPY package.json package-lock.json* ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 FROM deps AS dev
-COPY . .
+RUN adduser -S -u 10001 vitedev && chown -R vitedev /app
+COPY --chown=vitedev . .
+USER vitedev
 EXPOSE 5173
 CMD ["npm", "run", "dev"]
 

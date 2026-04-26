@@ -53,7 +53,7 @@ def list_logs(
         try:
             decoded = json.loads(base64.urlsafe_b64decode(cursor).decode())
             stmt = stmt.where(TechLog.ts < datetime.fromisoformat(decoded["ts"]))
-        except Exception:  # noqa: BLE001
+        except (ValueError, KeyError, json.JSONDecodeError):
             pass
 
     rows = db.execute(stmt.limit(limit + 1)).scalars().all()

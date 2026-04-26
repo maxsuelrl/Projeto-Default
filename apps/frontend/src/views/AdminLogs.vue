@@ -57,27 +57,85 @@ onMounted(load);
 <template>
   <AppShell>
     <h1>Logs técnicos</h1>
-    <p class="muted">Erros, latência e requisições. Para ações do usuário, ver <RouterLink to="/admin/audit-logs">/admin/audit-logs</RouterLink>.</p>
+    <p class="muted">
+      Erros, latência e requisições. Para ações do usuário, ver <RouterLink to="/admin/audit-logs">
+        /admin/audit-logs
+      </RouterLink>.
+    </p>
 
     <div class="filters">
-      <Select v-model="level" :options="levels" option-label="label" option-value="value" placeholder="Nível" show-clear />
-      <Select v-model="category" :options="categories" option-label="label" option-value="value" placeholder="Categoria" show-clear />
-      <InputText v-model="q" placeholder="Buscar (mensagem)" />
-      <Button icon="pi pi-refresh" label="Atualizar" @click="load" />
+      <Select
+        v-model="level"
+        :options="levels"
+        option-label="label"
+        option-value="value"
+        placeholder="Nível"
+        show-clear
+      />
+      <Select
+        v-model="category"
+        :options="categories"
+        option-label="label"
+        option-value="value"
+        placeholder="Categoria"
+        show-clear
+      />
+      <InputText
+        v-model="q"
+        placeholder="Buscar (mensagem)"
+      />
+      <Button
+        icon="pi pi-refresh"
+        label="Atualizar"
+        @click="load"
+      />
     </div>
 
-    <DataTable :value="items" :loading data-key="id" striped-rows>
-      <Column field="ts" header="Quando">
-        <template #body="{ data }">{{ new Date(data.ts).toLocaleString() }}</template>
+    <DataTable
+      :value="items"
+      :loading
+      data-key="id"
+      striped-rows
+    >
+      <Column
+        field="ts"
+        header="Quando"
+      >
+        <template #body="{ data }">
+          {{ new Date(data.ts).toLocaleString() }}
+        </template>
       </Column>
-      <Column field="level" header="Nível">
-        <template #body="{ data }"><Tag :severity="levelSeverity(data.level)" :value="data.level" /></template>
+      <Column
+        field="level"
+        header="Nível"
+      >
+        <template #body="{ data }">
+          <Tag
+            :severity="levelSeverity(data.level)"
+            :value="data.level"
+          />
+        </template>
       </Column>
-      <Column field="service" header="Serviço" />
-      <Column field="event" header="Evento" />
-      <Column field="message" header="Mensagem" />
-      <Column field="latencyMs" header="ms" />
-      <Column field="status" header="HTTP" />
+      <Column
+        field="service"
+        header="Serviço"
+      />
+      <Column
+        field="event"
+        header="Evento"
+      />
+      <Column
+        field="message"
+        header="Mensagem"
+      />
+      <Column
+        field="latencyMs"
+        header="ms"
+      />
+      <Column
+        field="status"
+        header="HTTP"
+      />
     </DataTable>
   </AppShell>
 </template>

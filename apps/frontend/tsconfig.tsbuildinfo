@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/router.ts","./src/__tests__/auth.store.test.ts","./src/api/client.ts","./src/stores/auth.ts","./src/App.vue","./src/components/AppShell.vue","./src/views/AdminAuditLogs.vue","./src/views/AdminLogs.vue","./src/views/Forbidden.vue","./src/views/Home.vue","./src/views/Login.vue","./src/views/Manual.vue","./src/views/NotFound.vue"],"version":"5.9.3"}

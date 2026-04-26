@@ -77,7 +77,8 @@ def emit_audit(
     masked_before = _mask(before)
     masked_after = _mask(after)
 
-    last = db.execute(select(AuditEvent).order_by(desc(AuditEvent.ts)).limit(1)).scalar_one_or_none()
+    last_stmt = select(AuditEvent).order_by(desc(AuditEvent.ts)).limit(1)
+    last = db.execute(last_stmt).scalar_one_or_none()
     prev_hash = last.hash if last else None
 
     payload = {
