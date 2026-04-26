@@ -7,6 +7,18 @@ on:
   schedule:
     - cron: "0 6 * * 1"  # toda segunda 06:00 UTC
 
+# Variável que controla o upload de SARIF para a aba "Security → Code scanning".
+#
+# Code scanning é GRÁTIS em repositórios PÚBLICOS, mas requer GitHub Advanced
+# Security (GHAS, pago) em repositórios PRIVADOS. Por padrão, este template
+# deixa o upload LIGADO; se o repo não tiver permissão (ex.: privado sem
+# GHAS), defina a variável de repositório `ENABLE_CODE_SCANNING_UPLOAD=false`
+# em Settings → Secrets and variables → Actions → Variables.
+#
+# Mesmo com o upload desligado, os scans continuam rodando e o CI continua
+# quebrando o PR em findings High/Critical — apenas o report visual fica
+# como artifact em vez de aparecer na aba Security.
+
 permissions:
   contents: read
   security-events: write
@@ -32,10 +44,24 @@ jobs:
     container: returntocorp/semgrep
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep ci --config p/owasp-top-ten --config p/security-audit --sarif --output=semgrep.sarif
-      - uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with: { sarif_file: semgrep.sarif }
+      - name: Run Semgrep
+        run: |
+          semgrep ci \
+            --config p/owasp-top-ten \
+            --config p/security-audit \
+            --sarif --output=semgrep.sarif \
+            --error
+      - name: Upload SARIF (aba Security)
+        if: always() && vars.ENABLE_CODE_SCANNING_UPLOAD != 'false'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+      - name: Upload SARIF (artifact, fallback)
+        if: always() && vars.ENABLE_CODE_SCANNING_UPLOAD == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-sarif
+          path: semgrep.sarif
 
   trivy-fs:
     name: SCA / IaC — Trivy fs
@@ -50,12 +76,24 @@ jobs:
           exit-code: "1"
           format: sarif
           output: trivy.sarif
-      - uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with: { sarif_file: trivy.sarif }
+      - name: Upload SARIF (aba Security)
+        if: always() && vars.ENABLE_CODE_SCANNING_UPLOAD != 'false'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy.sarif
+      - name: Upload SARIF (artifact, fallback)
+        if: always() && vars.ENABLE_CODE_SCANNING_UPLOAD == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sarif
+          path: trivy.sarif
 
+  # CodeQL é grátis em repositórios PÚBLICOS. Em repositórios PRIVADOS
+  # depende de GHAS. Para desligar, defina a variável de repositório
+  # `ENABLE_CODEQL=false`.
   codeql:
     name: SAST — CodeQL
+    if: vars.ENABLE_CODEQL != 'false'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
