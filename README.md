@@ -173,6 +173,25 @@ O script copia este esqueleto para `../meu-novo-projeto`, inicializa git,
 cria os docs a partir dos templates e abre o backlog em branco pronto para
 ser preenchido a partir do PRD.
 
+### 6.1 Setup obrigatório no GitHub (1 minuto, uma vez por repo)
+
+Os workflows `security.yml` e `release.yml` precisam de duas permissões que **não vêm habilitadas por padrão** em repositórios do GitHub:
+
+1. **Permitir Actions criarem PRs** (necessário para `release-please`):
+   `Settings` → `Actions` → `General` → `Workflow permissions` →
+   marque **"Allow GitHub Actions to create and approve pull requests"**.
+
+   *Alternativa*: criar um PAT fine-grained com `contents:write` e
+   `pull-requests:write`, salvar como secret `RELEASE_PLEASE_TOKEN`.
+   O workflow já usa `RELEASE_PLEASE_TOKEN || GITHUB_TOKEN`.
+
+2. **Habilitar Code Scanning** (necessário para Semgrep, CodeQL, Trivy
+   publicarem SARIF): `Settings` → `Code security` → `Code scanning` →
+   **Set up** (Default ou Advanced).
+
+3. (Opcional, recomendado) **Branch protection** em `main`: exigir CI verde,
+   PR review e conventional commits.
+
 ---
 
 ## 7. Convenções rápidas
