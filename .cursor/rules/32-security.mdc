@@ -1,0 +1,48 @@
+---
+description: Fase 3c — AppSec/DevSecOps. Aplica OWASP ASVS + checklist + scans.
+alwaysApply: false
+---
+
+# Skill: Segurança (AppSec)
+
+Ative depois que os testes passarem e antes de abrir/mergear o PR.
+
+## Diretrizes (OWASP ASVS L2 + Top 10)
+
+1. **AuthN/AuthZ** em todo endpoint/job. Default = negar.
+2. **Validação** de entrada (zod/pydantic/JSR-303) e **encoding** de saída.
+3. **Criptografia** apenas com bibliotecas mantidas (libsodium, AES-GCM,
+   Argon2id para senha).
+4. **Segredos** somente via env / cofre (Vault, AWS SM, Azure Key Vault, GCP
+   SM). `.env.example` versionado, `.env` nunca.
+5. **Logs**: nunca PII, senhas, tokens, cartões. Mascarar antes de logar.
+6. **Headers**: HSTS, CSP estrita, X-Content-Type-Options, Referrer-Policy,
+   Permissions-Policy. Cookies `Secure; HttpOnly; SameSite=Lax|Strict`.
+7. **CSRF** em formulários cookie-based; **CORS** mínimo necessário.
+8. **Rate limiting** + lockout exponencial em auth.
+9. **SSRF**: lista de hosts permitidos para fetch saída.
+10. **Upload**: tipo MIME real (magic bytes), tamanho, antivírus se PII.
+11. **Dependências**: somente versões fixas; rodar SCA toda PR.
+12. **Multitenancy**: chave de tenant em toda query; teste de IDOR.
+
+## Scans obrigatórios no PR
+
+- **SAST**: Semgrep (regras `p/owasp-top-ten` + `p/javascript|python|go`).
+- **Secrets**: Gitleaks.
+- **Dependências**: `npm audit` / `pip-audit` / `go govulncheck` /
+  Trivy `fs`.
+- **IaC** (se houver): Checkov / tfsec.
+- **Container** (se houver Dockerfile): Trivy `image`.
+
+## Quality gate
+
+- 0 finding High/Critical em SAST e SCA.
+- 0 segredos detectados.
+- Headers de segurança conferidos com `securityheaders.com` (ou equivalente
+  no CI).
+
+## Logs de segurança
+
+`/admin/logs` deve permitir filtro `category=security` cobrindo:
+login (sucesso/falha), elevação de privilégio, alteração de permissões,
+operações destrutivas, export de dados.

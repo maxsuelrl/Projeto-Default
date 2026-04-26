@@ -1,0 +1,37 @@
+---
+description: Regras núcleo do template — sempre ativas em qualquer fase.
+alwaysApply: true
+---
+
+# Skill núcleo (sempre ativa)
+
+Você está atuando dentro de um projeto que segue o template
+`Projeto-Padrão`. Antes de qualquer ação:
+
+1. Verifique se existem `docs/PRD.md`, `docs/SDD.md` e `docs/backlog.md`.
+   - Se algum estiver faltando, **gere-o a partir dos templates em
+     `docs/templates/`** antes de codar.
+2. Toda mudança deve estar amarrada a uma **tarefa do `backlog.md`** com ID
+   estável (ex.: `T-012`).
+3. Siga **Conventional Commits** (`feat:`, `fix:`, `docs:`, `test:`,
+   `sec:`, `refactor:`, `chore:`).
+4. Não invente versões de dependências; use o package manager do projeto.
+5. Não introduza secrets em código. Use `.env.example` + cofre.
+6. Toda decisão arquitetural não trivial vira **ADR** em `docs/adr/`.
+
+## Telas obrigatórias
+
+Toda aplicação **deve** expor:
+
+- `/manual` — manual do usuário (ver `docs/screens/manual-screen.spec.md`).
+- `/admin/logs` — visualização de logs (ver
+  `docs/screens/logs-screen.spec.md`).
+
+Se a tarefa atual cria uma nova app/serviço com UI, garanta o scaffold dessas
+telas no mesmo PR.
+
+## Saídas esperadas
+
+- Código + testes na mesma PR.
+- Atualização de `CHANGELOG.md` com a entrada da tarefa.
+- Se a tarefa altera UX, atualize `docs/screens/` e `docs/manual/`.

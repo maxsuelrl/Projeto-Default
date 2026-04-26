@@ -1,0 +1,59 @@
+---
+description: Fase 1 — Planejamento (PRD + SDD + backlog) seguindo Spec-Driven Development.
+globs:
+  - "docs/PRD.md"
+  - "docs/SDD.md"
+  - "docs/backlog.md"
+  - "docs/adr/**/*.md"
+---
+
+# Skill: Planejamento (SDD)
+
+Use esta skill ao escrever **PRD**, **SDD** ou **backlog**.
+
+## Como produzir um PRD
+
+A partir da idéia do usuário, preencha `docs/templates/PRD.md` mantendo:
+
+- **Problema** (uma frase, com persona)
+- **Hipóteses** numeradas e testáveis
+- **Métricas de sucesso** (KPIs com baseline e meta)
+- **Personas e jornadas**
+- **Escopo / fora de escopo**
+- **Restrições** (negócio, legais, LGPD, técnicas)
+- **Riscos + mitigação**
+
+## Como produzir um SDD
+
+Transforme o PRD em `docs/templates/SDD.md`:
+
+- **Domínio**: glossário, entidades, invariantes
+- **Contratos** (HTTP/SDK/Eventos) com schemas
+- **Modelo de dados** (DDL/Prisma/etc.)
+- **Arquitetura** (diagrama em Mermaid)
+- **NFRs** (performance, segurança, escalabilidade, observabilidade,
+  acessibilidade A11y AA, i18n)
+- **Decisões** referenciando ADRs
+- **Plano de testes** (camadas e cobertura mínima 80%)
+- **Plano de release** (feature flag, rollout, rollback)
+
+## Backlog
+
+Quebre o SDD em tarefas atômicas (1 PR cada) em `docs/templates/backlog.md`:
+
+```
+- [ ] T-001 — <título>
+  - Contexto: ...
+  - Critério de aceite (Gherkin):
+    - Given/When/Then
+  - Dependências: T-000
+  - Estimativa: S/M/L
+  - Riscos: ...
+```
+
+## Antes de fechar planejamento
+
+- [ ] PRD revisado por `Definition of Ready` (`docs/templates/DoR.md`)
+- [ ] ADRs criados para escolhas relevantes (linguagem, banco, auth, infra)
+- [ ] Riscos em `docs/templates/RISKS.md`
+- [ ] Telas obrigatórias `/manual` e `/admin/logs` listadas no backlog

@@ -1,0 +1,45 @@
+---
+description: Fase 4 — Finalização (manual, logs, release).
+globs:
+  - "docs/manual/**/*"
+  - "CHANGELOG.md"
+  - "docs/RELEASE.md"
+  - "**/release.config.*"
+---
+
+# Skill: Finalização
+
+Ative quando o backlog do milestone estiver fechado.
+
+## Entregáveis
+
+1. **Tela `/manual` populada**:
+   - Conteúdo gerado a partir das tarefas concluídas + `docs/manual/` (MDX
+     ou markdown).
+   - Estrutura: "Primeiros passos", "Funcionalidades", "Perguntas
+     frequentes", "Solução de problemas", "Atalhos", "Glossário".
+   - Busca client-side (Fuse.js/Pagefind) e índice por seção.
+
+2. **Tela `/admin/logs` operacional**:
+   - Conectada ao backend de logs (stdout estruturado + sink: Loki, ELK,
+     CloudWatch, Datadog…).
+   - Filtros mínimos: período, nível (`debug|info|warn|error|fatal`),
+     `service`, `category` (`app|security|audit|integration`), `userId`,
+     `traceId`, busca textual.
+   - Export CSV/JSON, paginação por cursor, RBAC (somente admin/operador).
+
+3. **Release**:
+   - `RELEASE.md` com highlights, breaking changes, migrações,
+     instruções de rollback.
+   - `CHANGELOG.md` consolidado (Keep a Changelog).
+   - Tag `vX.Y.Z` (SemVer).
+   - `release-checklist.md` 100%.
+
+## Quality gate de release
+
+- [ ] CI verde em `main`.
+- [ ] Cobertura geral ≥ 80%.
+- [ ] Sem itens High/Critical em SAST/SCA.
+- [ ] Backups e plano de rollback testados em staging.
+- [ ] Monitoramento (dashboards + alertas) ativo.
+- [ ] Telas `/manual` e `/admin/logs` revisadas com usuário real.

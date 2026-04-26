@@ -1,0 +1,37 @@
+---
+description: Fase 2 — Prototipação visual (Google Stitch / v0 / Figma) e design tokens.
+globs:
+  - "docs/UX/**/*"
+  - "design/**/*"
+  - "src/styles/**/*"
+  - "tailwind.config.*"
+---
+
+# Skill: Prototipação
+
+Use esta skill quando estiver consolidando UI a partir do Stitch ou Figma.
+
+## Entregáveis
+
+- `docs/UX/flows.md` — fluxos do usuário (Mermaid `journey` ou `flowchart`).
+- `docs/UX/wireframes/` — exports do Stitch/Figma (PNG ou link).
+- `docs/UX/tokens.md` — design tokens **fonte da verdade**:
+  - cores (paleta + semântica), tipografia, espaçamento, raios, sombras,
+    breakpoints, z-index.
+- `docs/UX/components.md` — inventário de componentes (átomos→organismos).
+
+## Regras
+
+1. Cada token vira variável CSS / Tailwind theme — **nunca hardcode**.
+2. Aplicar **WCAG 2.2 AA**: contraste, foco visível, hit area ≥ 44px.
+3. Estados obrigatórios para cada componente: default, hover, focus, active,
+   disabled, loading, empty, error.
+4. Toda tela tem versão **mobile-first**, **dark mode** e
+   **estado de erro/empty**.
+5. As telas obrigatórias `/manual` e `/admin/logs` devem entrar no inventário
+   antes da Fase 3.
+
+## Saídas para Dev
+
+- Mapa "tela → componentes → tokens → testes E2E" para virar tarefas no
+  `backlog.md`.

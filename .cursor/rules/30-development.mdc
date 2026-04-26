@@ -1,0 +1,43 @@
+---
+description: Fase 3a — Codificação a partir de uma tarefa do backlog.
+alwaysApply: false
+---
+
+# Skill: Desenvolvimento
+
+Ative ao implementar **uma tarefa** do `docs/backlog.md`.
+
+## Procedimento
+
+1. Leia a tarefa (ID `T-xxx`) e o trecho do SDD relacionado.
+2. Crie branch `feat/T-xxx-<slug>` (ou `fix/`, `chore/` conforme tipo).
+3. **TDD opcional, mas testes na mesma PR sempre.**
+4. Implemente respeitando:
+   - Estilo/lint do projeto (`.editorconfig`, ESLint/Prettier/Ruff/etc.).
+   - Tipagem estrita quando disponível.
+   - Logs estruturados (JSON) em pontos chave (entrada/saída de endpoints,
+     jobs, falhas tratadas).
+   - Sem `console.log` em produção; use o logger do projeto (Pino/Winston/
+     structlog/etc.).
+   - Tratamento de erros sem vazar stack para o usuário final.
+   - i18n-ready (textos em recurso, não no JSX).
+5. Atualize `CHANGELOG.md` (Unreleased) com a entrada da tarefa.
+6. Atualize `/manual` se a tarefa expõe nova funcionalidade ao usuário.
+
+## Logs e telemetria
+
+Toda função de borda (controller/handler/cron) deve emitir:
+
+- `level`, `ts`, `service`, `env`, `traceId`, `spanId`, `userId?`, `event`,
+  `latencyMs`, `outcome` (`ok|error`), `errorCode?`.
+
+A tela `/admin/logs` consome este formato — não invente outro.
+
+## Antes de marcar a tarefa como pronta
+
+- [ ] Critério de aceite Gherkin atendido.
+- [ ] Lint + typecheck + format verdes.
+- [ ] Testes verdes localmente.
+- [ ] Cobertura do diff ≥ 80%.
+- [ ] Observabilidade adicionada (log/metric/trace conforme aplicável).
+- [ ] Passa adiante para skill `31-testing` e depois `32-security`.
