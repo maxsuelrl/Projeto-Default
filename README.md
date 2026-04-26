@@ -7,6 +7,9 @@ Estrutura padrão para iniciar **qualquer** projeto de software seguindo o fluxo
 > Segurança embutidos no ciclo, e que **toda** entrega contenha as telas
 > obrigatórias de **Manual do Usuário** e **Logs do Sistema**.
 
+> **🚀 Quer começar a usar agora?** Leia o **[USAGE.md](./USAGE.md)** —
+> manual prático "do zero ao deploy" com exemplos do dia a dia.
+
 ---
 
 ## 1. Fluxo end-to-end
