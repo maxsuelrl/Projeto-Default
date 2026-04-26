@@ -1,37 +1,38 @@
 ---
-description: Regras núcleo do template — sempre ativas em qualquer fase.
+description: Regras núcleo do template. Mantida curta para não poluir o contexto.
 alwaysApply: true
 ---
 
-# Skill núcleo (sempre ativa)
+# Skill núcleo
 
-Você está atuando dentro de um projeto que segue o template
-`Projeto-Padrão`. Antes de qualquer ação:
+Este projeto segue o template `Projeto-Padrão`. Antes de qualquer ação:
 
-1. Verifique se existem `docs/PRD.md`, `docs/SDD.md` e `docs/backlog.md`.
-   - Se algum estiver faltando, **gere-o a partir dos templates em
-     `docs/templates/`** antes de codar.
-2. Toda mudança deve estar amarrada a uma **tarefa do `backlog.md`** com ID
-   estável (ex.: `T-012`).
-3. Siga **Conventional Commits** (`feat:`, `fix:`, `docs:`, `test:`,
-   `sec:`, `refactor:`, `chore:`).
-4. Não invente versões de dependências; use o package manager do projeto.
-5. Não introduza secrets em código. Use `.env.example` + cofre.
-6. Toda decisão arquitetural não trivial vira **ADR** em `docs/adr/`.
+1. **Spec antes de código**.
+   Se `docs/PRD.md`, `docs/SDD.md` ou `docs/backlog.md` estiverem **faltando
+   ou desatualizados** para a tarefa pedida, **pare a implementação** e entre
+   na fase de planejamento. **Não invente requisitos** sem confirmação do
+   usuário — peça os pontos faltantes ou proponha um rascunho explicitamente
+   marcado como **DRAFT** para revisão.
 
-## Telas obrigatórias
+2. **Tarefa é a unidade de trabalho**.
+   Toda mudança deve estar amarrada a uma tarefa do `docs/backlog.md` com ID
+   estável (ex.: `T-012`). Se não existir, adicione-a antes (com critério
+   de aceite).
 
-Toda aplicação **deve** expor:
+3. **Conventional Commits** (`feat:`, `fix:`, `docs:`, `test:`, `sec:`,
+   `refactor:`, `chore:`).
 
-- `/manual` — manual do usuário (ver `docs/screens/manual-screen.spec.md`).
-- `/admin/logs` — visualização de logs (ver
-  `docs/screens/logs-screen.spec.md`).
+4. **Sem segredos** em código (use `.env.example` + cofre). Sem **versões
+   inventadas** de dependências (use o package manager).
 
-Se a tarefa atual cria uma nova app/serviço com UI, garanta o scaffold dessas
-telas no mesmo PR.
+5. **Decisão arquitetural não trivial → ADR** em `docs/adr/`.
 
-## Saídas esperadas
+6. **Telas obrigatórias** em qualquer app com UI (detalhes em
+   `90-screens-mandatory.mdc`):
+   - `/manual` (usuário final)
+   - `/admin/logs` (logs técnicos)
+   - `/admin/audit-logs` (auditoria de ações)
 
-- Código + testes na mesma PR.
-- Atualização de `CHANGELOG.md` com a entrada da tarefa.
-- Se a tarefa altera UX, atualize `docs/screens/` e `docs/manual/`.
+Skills mais detalhadas estão em `.cursor/rules/10-…40` e são acionadas por
+fase. Esta skill é proposital curta para não poluir o contexto em tarefas
+pequenas.

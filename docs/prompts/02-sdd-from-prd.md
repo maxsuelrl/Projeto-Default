@@ -11,6 +11,11 @@ Obrigatório:
 - ADRs para: linguagem, banco, auth, infra, observabilidade.
 - Plano de testes com cobertura mínima 80% no diff.
 - Plano de release (canário + rollback).
-- Listar `/manual` e `/admin/logs` como telas obrigatórias.
+- Listar telas obrigatórias: `/manual`, `/admin/logs` (técnicos) e
+  `/admin/audit-logs` (auditoria de ações).
+- Inicializar `docs/THREAT-MODEL.md` se houver: auth, pagamento, multitenant,
+  upload, dados pessoais, integrações externas.
+- Inicializar `docs/PRIVACY-LGPD.md` se houver dado pessoal.
+- Inicializar `docs/RUNBOOK.md` com as seções principais (mesmo vazias).
 
 Em pontos sem informação suficiente: levantar **open questions** ao final.

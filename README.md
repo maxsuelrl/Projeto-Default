@@ -61,6 +61,10 @@ correspondentes neste repositório.
 │   │   ├── DoR.md                  # Definition of Ready
 │   │   ├── DoD.md                  # Definition of Done
 │   │   ├── RISKS.md
+│   │   ├── THREAT-MODEL.md         # Modelagem STRIDE/ASVS
+│   │   ├── SECURITY-REVIEW.md      # Revisão por release/tarefa sensível
+│   │   ├── PRIVACY-LGPD.md         # DPIA simplificado
+│   │   ├── RUNBOOK.md              # Operação: deploy, rollback, incidentes
 │   │   ├── RELEASE.md
 │   │   └── CHANGELOG.md
 │   ├── checklists/
@@ -70,8 +74,9 @@ correspondentes neste repositório.
 │   │   ├── performance-checklist.md
 │   │   └── release-checklist.md
 │   ├── screens/
-│   │   ├── manual-screen.spec.md   # Spec da tela /manual
-│   │   └── logs-screen.spec.md     # Spec da tela /admin/logs
+│   │   ├── manual-screen.spec.md       # Spec /manual
+│   │   ├── logs-screen.spec.md         # Spec /admin/logs (técnicos)
+│   │   └── audit-logs-screen.spec.md   # Spec /admin/audit-logs (auditoria)
 │   ├── tooling.md                  # MCPs, plugins, integrações
 │   └── prompts/                    # Prompts reutilizáveis por fase
 │       ├── 01-prd-from-idea.md
@@ -95,7 +100,8 @@ correspondentes neste repositório.
 │       └── release.yml             # changelog + tag
 │
 └── scripts/
-    └── new-project.sh              # Bootstrap de um novo projeto
+    ├── new-project.sh              # Bootstrap (bash/Linux/macOS/WSL)
+    └── new-project.mjs             # Bootstrap portátil (Node, todos OS)
 ```
 
 ---
@@ -145,10 +151,16 @@ Skill: `.cursor/rules/40-finalization.mdc`.
 
 ## 4. Telas obrigatórias em **todo** sistema
 
-| Tela            | Rota sugerida   | Quem vê        | Spec                                   |
-|-----------------|-----------------|----------------|----------------------------------------|
-| Manual do usuário| `/manual`      | Qualquer user  | `docs/screens/manual-screen.spec.md`   |
-| Logs do sistema  | `/admin/logs`  | Admin/Operador | `docs/screens/logs-screen.spec.md`     |
+| Tela              | Rota sugerida      | Quem vê         | Spec                                       |
+|-------------------|--------------------|-----------------|--------------------------------------------|
+| Manual do usuário | `/manual`          | Qualquer user   | `docs/screens/manual-screen.spec.md`       |
+| Logs **técnicos** | `/admin/logs`      | Admin/Operador  | `docs/screens/logs-screen.spec.md`         |
+| **Auditoria**     | `/admin/audit-logs`| Admin/Auditor   | `docs/screens/audit-logs-screen.spec.md`   |
+
+> Logs técnicos e auditoria são **separados** propositalmente: ruído,
+> retenção, RBAC e formato de evento são diferentes. Logs técnicos guardam
+> o que o **sistema** fez; auditoria guarda o que o **usuário** fez,
+> append-only com hash chain.
 
 Estão descritas como contrato (campos, filtros, permissões, telemetria,
 acessibilidade) para serem implementadas em qualquer stack.
@@ -165,13 +177,28 @@ etc.) e em que fase usar cada um.
 
 ## 6. Como iniciar um novo projeto
 
+Há duas versões do bootstrap, escolha conforme seu ambiente:
+
 ```bash
+# Versão portátil (Linux, macOS, Windows) — recomendada
+node scripts/new-project.mjs meu-novo-projeto
+
+# Versão shell (Linux/macOS/WSL/Git Bash) — original
 ./scripts/new-project.sh meu-novo-projeto
 ```
 
-O script copia este esqueleto para `../meu-novo-projeto`, inicializa git,
-cria os docs a partir dos templates e abre o backlog em branco pronto para
-ser preenchido a partir do PRD.
+**Requisitos**:
+
+| Versão | Plataformas | Dependências |
+|---|---|---|
+| `new-project.mjs` | Linux, macOS, Windows (PowerShell/cmd) | `node >= 20`, `git` |
+| `new-project.sh` | Linux, macOS, WSL, Git Bash | `bash`, `rsync`, `sed`, `git` |
+
+Os scripts copiam o esqueleto para `../meu-novo-projeto`, inicializam git e
+geram os artefatos vivos a partir dos templates: `docs/PRD.md`, `docs/SDD.md`,
+`docs/backlog.md`, `docs/RISKS.md`, `docs/RELEASE.md`, `docs/THREAT-MODEL.md`,
+`docs/SECURITY-REVIEW.md`, `docs/PRIVACY-LGPD.md`, `docs/RUNBOOK.md` e
+`CHANGELOG.md`.
 
 ### 6.1 Setup do GitHub (uma vez por repo)
 

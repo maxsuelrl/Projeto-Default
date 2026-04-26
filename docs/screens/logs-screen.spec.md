@@ -1,17 +1,29 @@
-# Spec — Tela `/admin/logs` (Logs do Sistema)
+# Spec — Tela `/admin/logs` (Logs **Técnicos** do Sistema)
+
+> **Esta tela é só para logs técnicos** (o que o sistema fez). Auditoria de
+> ações do usuário fica em outra tela com regras mais estritas — ver
+> [`audit-logs-screen.spec.md`](./audit-logs-screen.spec.md).
+>
+> | Tela | Conteúdo | Acesso | Retenção |
+> |---|---|---|---|
+> | `/admin/logs` | Erros, latência, requests, jobs, integrações | `admin`, `operator` | 30-90 dias |
+> | `/admin/audit-logs` | Ações do usuário (login, edição, export) | `admin`, `auditor` | ≥ 5 anos, append-only |
+>
+> Os dois são correlacionáveis via `traceId`/`requestId`.
 
 ## Objetivo
 Visualização operacional dos logs estruturados de **todos** os serviços do
 projeto, com filtros, busca e export. Não substitui o stack de
 observabilidade externo; é a "porta da frente" dentro do produto para
-operadores e admins.
+operadores e admins. **Não use esta tela como trilha legal/forense** —
+para isso existe `/admin/audit-logs`.
 
 ## Rota e permissões
 - Rota: `/admin/logs`.
 - Permissões: somente papéis `admin` e `operator`. Outros recebem 403.
 - Auditoria: cada acesso gera `audit.log_view {by, filters}`.
 
-## Schema de log (fonte da verdade)
+## Schema de log técnico (fonte da verdade)
 Todo serviço **deve** emitir JSON com este shape mínimo:
 
 ```json
@@ -20,20 +32,28 @@ Todo serviço **deve** emitir JSON com este shape mínimo:
   "level": "info",                     // debug|info|warn|error|fatal
   "service": "api",                    // nome do microserviço
   "env": "prod",                       // dev|staging|prod
-  "category": "app",                   // app|security|audit|integration
-  "event": "user.login",               // dot.case
-  "message": "user logged in",
+  "category": "app",                   // app|security|integration|job
+  "event": "http.request",             // dot.case
+  "message": "GET /users/123 200",
   "traceId": "0af7651916cd43dd...",
   "spanId": "00f067aa0ba902b7",
   "userId": "u_123",                   // opcional
   "tenantId": "t_42",                  // opcional, se multitenant
   "requestId": "req_abc",
+  "route": "/users/:id",
+  "method": "GET",
+  "status": 200,
   "latencyMs": 142,
   "outcome": "ok",                     // ok|error
   "errorCode": null,
+  "errorStackHash": null,              // hash da stack (sem stack bruta)
   "context": { /* livre, sem PII */ }
 }
 ```
+
+**Eventos de auditoria** (login, alteração de papel, export de dados,
+exclusão) **não** entram aqui — vão pra `/admin/audit-logs` com schema
+próprio (ver `audit-logs-screen.spec.md`).
 
 > Mascarar PII e segredos antes de logar. Tokens nunca, mesmo truncados.
 
@@ -77,7 +97,9 @@ Todo serviço **deve** emitir JSON com este shape mínimo:
 - Auto-refresh opcional (5s/15s/30s).
 - Salvar filtro como bookmark + compartilhar via URL com query string.
 - Export CSV/JSON do conjunto filtrado (limite configurável).
-- Filtro "category=security" pré-pronto (login, perm, export, destrutivas).
+- Filtro "category=security" pré-pronto (eventos técnicos de segurança:
+  rate-limit, csrf-fail, mfa-challenge). Para **ações** do usuário use
+  `/admin/audit-logs`.
 - Realce visual por nível (warn=âmbar, error=vermelho, fatal=vermelho fundo).
 - Tema dark; densidade compacta/confortável.
 - Acessibilidade: tabela navegável por teclado, leitor de tela.

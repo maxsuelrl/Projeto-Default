@@ -1,19 +1,22 @@
 ---
-description: Garante que toda app/serviço entregue tenha as telas obrigatórias /manual e /admin/logs.
+description: Garante telas obrigatórias /manual, /admin/logs e /admin/audit-logs em qualquer app com UI.
 alwaysApply: true
 ---
 
-# Skill: Telas obrigatórias
+# Telas obrigatórias
 
-Sempre que estiver criando/scaffoldando uma nova aplicação com UI:
+Sempre que estiver criando/scaffoldando uma nova aplicação com UI, garanta:
 
-1. Crie a rota **`/manual`** seguindo `docs/screens/manual-screen.spec.md`.
-2. Crie a rota **`/admin/logs`** seguindo `docs/screens/logs-screen.spec.md`.
-3. Adicione testes E2E mínimos (smoke) das duas telas.
-4. Adicione entradas no `backlog.md` se ainda não existirem
-   (`T-MANUAL-001`, `T-LOGS-001`).
+1. `/manual` — manual do usuário
+   (`docs/screens/manual-screen.spec.md`).
+2. `/admin/logs` — logs **técnicos** do sistema
+   (`docs/screens/logs-screen.spec.md`).
+3. `/admin/audit-logs` — auditoria de **ações do usuário**
+   (`docs/screens/audit-logs-screen.spec.md`).
 
-Em serviços headless (sem UI), os "logs" são exigidos via:
-- endpoint `GET /internal/logs` autenticado (RBAC),
-- ou painel embutido do observability stack (Grafana, Kibana, Datadog) com
-  link consolidado em `docs/RUNBOOK.md`.
+E adicione no backlog as tarefas:
+`T-MANUAL-001`, `T-LOGS-001`, `T-AUDIT-001`.
+
+Em serviços headless (sem UI), exponha endpoints equivalentes
+autenticados (`GET /internal/logs`, `GET /internal/audit-logs`) ou referencie
+um painel externo no `docs/RUNBOOK.md`.

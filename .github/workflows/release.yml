@@ -1,5 +1,7 @@
 name: Release
 
+# Actions pinadas por SHA — ver .github/workflows/security.yml.
+
 on:
   push:
     branches: [main]
@@ -20,7 +22,7 @@ jobs:
       #   "Allow GitHub Actions to create and approve pull requests" ATIVADO.
       # Caso contrário, crie um PAT (fine-grained: contents=write, pull-requests=write)
       # e salve como secret RELEASE_PLEASE_TOKEN.
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@cb27530b8d22ca0f4d20b6b4a4d20a818b2acf16 # v4.3.0
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json

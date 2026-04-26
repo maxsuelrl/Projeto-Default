@@ -27,4 +27,8 @@ release:
 
 new-project:
 	@test -n "$(NAME)" || (echo "Use: make new-project NAME=<nome>"; exit 1)
-	./scripts/new-project.sh "$(NAME)" $(if $(DEST),"$(DEST)")
+	@if command -v node >/dev/null; then \
+		node ./scripts/new-project.mjs "$(NAME)" $(if $(DEST),"$(DEST)"); \
+	else \
+		./scripts/new-project.sh "$(NAME)" $(if $(DEST),"$(DEST)"); \
+	fi
