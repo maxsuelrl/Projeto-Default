@@ -173,6 +173,58 @@ O script copia este esqueleto para `../meu-novo-projeto`, inicializa git,
 cria os docs a partir dos templates e abre o backlog em branco pronto para
 ser preenchido a partir do PRD.
 
+### 6.1 Setup do GitHub (uma vez por repo)
+
+#### Obrigatório
+1. **Permitir Actions criarem PRs** (para o `release-please` funcionar):
+   `Settings → Actions → General → Workflow permissions` →
+   marque **"Allow GitHub Actions to create and approve pull requests"**.
+
+   *Alternativa*: criar PAT fine-grained (`contents:write`, `pull-requests:write`)
+   e salvar como secret `RELEASE_PLEASE_TOKEN`. O workflow usa
+   `RELEASE_PLEASE_TOKEN || GITHUB_TOKEN`.
+
+#### Sobre Code Scanning (custo)
+**Code scanning** (a aba "Security → Code scanning alerts" e o upload de SARIF
+de Semgrep/Trivy/CodeQL) é:
+
+- **Grátis em repositórios públicos** ✅
+- **Pago em repositórios privados** (parte do **GitHub Advanced Security – GHAS**)
+
+Você **não precisa** de GHAS para os gates de segurança funcionarem. Mesmo
+sem ele:
+- Semgrep, Gitleaks, Trivy e ZAP **continuam rodando** no CI.
+- O job **continua falhando** o PR em findings High/Critical.
+- Os relatórios SARIF são salvos como **artifact** do run (download por
+  release/PR), em vez de aparecerem na aba Security.
+
+Para desligar o upload de SARIF (caso o repo seja privado e sem GHAS),
+em `Settings → Secrets and variables → Actions → Variables` defina:
+
+| Variável | Valor | Efeito |
+|---|---|---|
+| `ENABLE_CODE_SCANNING_UPLOAD` | `false` | SARIF do Semgrep/Trivy vira artifact em vez de upload |
+| `ENABLE_CODEQL` | `false` | Pula o job CodeQL inteiro |
+
+Se o repo for público (ou tiver GHAS), pode ignorar — o default já é o
+caminho ideal e tudo aparece em "Security".
+
+Tabela rápida do que custa o quê:
+
+| Recurso | Repo público | Repo privado |
+|---|---|---|
+| Code scanning (SARIF, CodeQL) | grátis | GHAS (pago) |
+| Secret scanning + push protection | grátis | GHAS (pago) |
+| Dependabot alerts/updates | grátis | grátis |
+| Actions (rodar Semgrep/Trivy/Gitleaks/ZAP) | grátis | grátis (cota do plano) |
+
+#### Recomendado
+2. **Habilitar Dependabot alerts**: `Settings → Code security → Dependabot` →
+   ativar **Dependabot alerts** e **Dependabot security updates** (grátis em
+   qualquer repo).
+3. **Branch protection** em `main`: exigir CI verde, PR review e
+   Conventional Commits.
+
 ---
 
 ## 7. Convenções rápidas
