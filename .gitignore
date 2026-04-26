@@ -17,6 +17,8 @@ build/
 .next/
 out/
 .target/
+*.egg-info/
+*.tsbuildinfo
 
 # Coverage
 coverage/
