@@ -1,11 +1,13 @@
 ---
-description: Fase 3c — AppSec/DevSecOps. Aplica OWASP ASVS + checklist + scans.
+description: Fase 3c — AppSec/DevSecOps. Aplica OWASP ASVS L2 + checklist + scans. Acione manualmente antes do PR.
 alwaysApply: false
 ---
 
 # Skill: Segurança (AppSec)
 
-Ative depois que os testes passarem e antes de abrir/mergear o PR.
+Skill **acionada por descrição/manualmente**, não sempre ativa. Use após os
+testes passarem e antes de abrir/mergear o PR. Para ameaças não óbvias,
+referencie também `docs/templates/THREAT-MODEL.md`.
 
 ## Diretrizes (OWASP ASVS L2 + Top 10)
 

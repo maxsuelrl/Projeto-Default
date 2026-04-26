@@ -33,12 +33,11 @@ rsync -a \
 cd "$DEST"
 
 echo "→ Renomeando docs do template para artefatos vivos..."
-mkdir -p docs/adr docs/manual/pt-BR
-[[ -f docs/PRD.md ]] || cp docs/templates/PRD.md docs/PRD.md
-[[ -f docs/SDD.md ]] || cp docs/templates/SDD.md docs/SDD.md
-[[ -f docs/backlog.md ]] || cp docs/templates/backlog.md docs/backlog.md
-[[ -f docs/RISKS.md ]] || cp docs/templates/RISKS.md docs/RISKS.md
-[[ -f docs/RELEASE.md ]] || cp docs/templates/RELEASE.md docs/RELEASE.md
+mkdir -p docs/adr docs/manual/pt-BR docs/postmortems
+for src in PRD.md SDD.md backlog.md RISKS.md RELEASE.md \
+           THREAT-MODEL.md SECURITY-REVIEW.md PRIVACY-LGPD.md RUNBOOK.md; do
+  [[ -f "docs/$src" ]] || cp "docs/templates/$src" "docs/$src"
+done
 [[ -f CHANGELOG.md ]] || cp docs/templates/CHANGELOG.md CHANGELOG.md
 
 echo "→ Substituindo placeholder do nome..."

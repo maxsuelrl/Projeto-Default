@@ -1,6 +1,13 @@
 # Prompt — Revisão de segurança
 
-Aplique o `docs/checklists/security-checklist.md` ao diff atual.
+Aplique:
+- `docs/checklists/security-checklist.md` (pulse-check rápido), e
+- `docs/templates/SECURITY-REVIEW.md` (formal, em **toda release** e em
+  toda tarefa que toque auth/pagamento/dados pessoais/upload/permissões/
+  integração externa).
+
+Cruzar com `docs/THREAT-MODEL.md` (se existir) para garantir que cada
+fluxo crítico afetado tem mitigação implementada.
 
 Roteiro:
 1. Liste rotas/handlers/jobs novos ou alterados.
@@ -11,5 +18,8 @@ Roteiro:
    - Caminho do arquivo + linha
    - Categoria (CWE/OWASP)
    - Sugestão de correção
-5. Verifique se logs cobrem `category=security` e estão sem PII.
-6. Aprove só com todos os itens marcados.
+5. Verifique:
+   - logs técnicos sem PII (`/admin/logs`).
+   - eventos esperados emitidos para auditoria (`/admin/audit-logs`).
+6. Atualize `docs/THREAT-MODEL.md` se a mudança altera fluxo crítico.
+7. Aprove só preenchendo `SECURITY-REVIEW.md` §7 com decisão.

@@ -1,11 +1,14 @@
 ---
-description: Fase 3a — Codificação a partir de uma tarefa do backlog.
+description: Fase 3a — Codificação a partir de uma tarefa do backlog. Acione manualmente ou pela menção a 'implementar tarefa T-xxx'.
 alwaysApply: false
 ---
 
 # Skill: Desenvolvimento
 
-Ative ao implementar **uma tarefa** do `docs/backlog.md`.
+Acione esta skill manualmente (ou ela é acionada pela menção a "tarefa
+T-xxx", "implementar T-xxx") ao codificar **uma tarefa** do
+`docs/backlog.md`. Ela **não** é sempre ativa para evitar poluir o contexto
+em tarefas pequenas (ex.: ajuste de copy, fix trivial).
 
 ## Procedimento
 

@@ -7,7 +7,9 @@ Regras:
 - 1 tarefa = 1 PR. Se passar de `L`, quebre.
 - IDs imutáveis: `T-001`, `T-002`...
 - Cada tarefa com critério de aceite em **Gherkin**.
-- Inclua sempre as tarefas `T-MANUAL-001`, `T-LOGS-001`, `T-OBS-001`,
-  `T-SEC-001`, `T-SEC-002`, `T-CI-001`.
+- Inclua sempre as tarefas `T-MANUAL-001`, `T-LOGS-001`, `T-AUDIT-001`,
+  `T-OBS-001`, `T-SEC-001`, `T-SEC-002`, `T-CI-001`.
+- Se houver dados pessoais ou pagamento, inclua `T-THREAT-001`
+  (modelagem de ameaças) e `T-LGPD-001` (DPIA + direitos do titular).
 - Marque dependências e prioridade.
 - Ordene por valor + dependências (caminho crítico primeiro).

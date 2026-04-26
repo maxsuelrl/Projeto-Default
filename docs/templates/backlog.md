@@ -23,10 +23,15 @@
   - Spec: `docs/screens/manual-screen.spec.md`.
   - AC: rota acessível autenticada, busca, índice, conteúdo MDX, smoke E2E.
 
-- [ ] **T-LOGS-001 — Tela `/admin/logs`** [P0][M][todo]
+- [ ] **T-LOGS-001 — Tela `/admin/logs` (técnicos)** [P0][M][todo]
   - Spec: `docs/screens/logs-screen.spec.md`.
   - AC: filtros (período, nível, serviço, categoria, userId, traceId), busca,
     paginação por cursor, export CSV/JSON, RBAC admin/operador.
+
+- [ ] **T-AUDIT-001 — Tela `/admin/audit-logs` (auditoria)** [P0][M][todo]
+  - Spec: `docs/screens/audit-logs-screen.spec.md`.
+  - AC: append-only, schema de auditoria com `actor/action/entity/before/after`,
+    hash chain de integridade, retenção ≥ 5 anos, RBAC admin/auditor.
 
 - [ ] **T-OBS-001 — Logger estruturado + correlação** [P0][S][todo]
   - AC: todo handler de borda emite log com schema definido no SDD.
