@@ -73,20 +73,38 @@ ativa). Recomendados para potencializar:
 
 ### 2.1 Bootstrap
 
+Duas versões disponíveis — escolha conforme o seu OS:
+
 ```bash
-# Estando na pasta-mãe deste template
+# Versão portátil (Linux, macOS, Windows) — recomendada
+node scripts/new-project.mjs meu-app
+
+# Versão shell (Linux, macOS, WSL, Git Bash)
 ./scripts/new-project.sh meu-app
+```
+
+```bash
 cd ../meu-app
 gh repo create meu-app --private --source=. --remote=origin --push
 ```
 
 O script já:
 - Copia o esqueleto para `../meu-app`.
-- Renomeia `docs/templates/PRD.md` → `docs/PRD.md` (idem SDD, backlog, etc.).
+- Renomeia os templates em artefatos vivos: `docs/PRD.md`, `docs/SDD.md`,
+  `docs/backlog.md`, `docs/RISKS.md`, `docs/RELEASE.md`,
+  `docs/THREAT-MODEL.md`, `docs/SECURITY-REVIEW.md`,
+  `docs/PRIVACY-LGPD.md`, `docs/RUNBOOK.md` e `CHANGELOG.md`.
 - Inicializa git com primeiro commit.
 
 Se preferir usar este repo como **template do GitHub** em vez do script:
 `Use this template → Create a new repository`.
+
+**Requisitos rápidos**:
+
+| Versão | Plataformas | Dependências |
+|---|---|---|
+| `new-project.mjs` | Linux, macOS, Windows | `node >= 20`, `git` |
+| `new-project.sh` | Linux, macOS, WSL, Git Bash | `bash`, `rsync`, `sed`, `git` |
 
 ### 2.2 Idéia → PRD (Spec-Driven Development)
 
@@ -119,6 +137,23 @@ Aqui o agente vai te perguntar coisas tipo:
 Responda. As decisões viram **ADRs** em `docs/adr/ADR-0001-*.md`. Você
 nunca mais vai esquecer por que escolheu Postgres em vez de Mongo.
 
+> **Importante**: a skill `00-core` é estrita — se você pular o PRD ou o
+> SDD, a IA **vai parar** e pedir para você completar (ou propor um rascunho
+> DRAFT). Isso é proposital: evita "PRD inventado" só pra conseguir codar.
+
+### 2.3.1 Documentos extras quando o projeto envolve dado sensível
+
+Se o projeto tem **auth, pagamento, dado pessoal, multi-tenant, upload de
+arquivo ou integração externa**, preencha também (templates já copiados
+pelo bootstrap):
+
+| Arquivo | Quando | Para quê |
+|---|---|---|
+| `docs/THREAT-MODEL.md` | sempre que houver fluxo crítico | STRIDE/ASVS: ameaças × mitigações |
+| `docs/PRIVACY-LGPD.md` | sempre que houver dado pessoal | DPIA, base legal, direitos do titular |
+| `docs/RUNBOOK.md` | logo no início | deploy/rollback/incidentes — você esquece, ele lembra |
+| `docs/SECURITY-REVIEW.md` | por release ou tarefa sensível | revisão formal, decisão Aprovado/Cond./Reprovado |
+
 ### 2.4 SDD → backlog atômico
 
 Prompt `docs/prompts/03-backlog-from-sdd.md`. Resultado: `docs/backlog.md`
@@ -145,8 +180,13 @@ com tarefas tipo:
 1. Use **Google Stitch / v0 / Figma Make** para gerar telas a partir do PRD.
 2. Salve os fluxos em `docs/UX/flows.md` (Mermaid).
 3. Defina design tokens em `docs/UX/tokens.md` (cor, tipografia, spacing).
-4. **Sempre** adicione no inventário as duas telas obrigatórias:
-   `/manual` e `/admin/logs`.
+4. **Sempre** adicione no inventário as **três** telas obrigatórias:
+
+| Tela | Conteúdo | Acesso | Spec |
+|---|---|---|---|
+| `/manual` | Manual do usuário (MDX) | autenticado | `docs/screens/manual-screen.spec.md` |
+| `/admin/logs` | Logs **técnicos** (erros, latência, requests) | admin/operator | `docs/screens/logs-screen.spec.md` |
+| `/admin/audit-logs` | **Auditoria** de ações do usuário, append-only | admin/auditor | `docs/screens/audit-logs-screen.spec.md` |
 
 ### 2.6 Quando o planejamento está "pronto"?
 
@@ -223,6 +263,9 @@ make test     # ou npm test, pytest, go test ./... — depende da stack
 > Aplique 32-security.mdc no diff atual. Liste rotas/handlers novos e
 > verifique AuthN/AuthZ, validação, rate limit, logs sem PII. Rode (ou
 > indique como rodar) Semgrep, Gitleaks e SCA.
+> Se a tarefa toca auth/pagamento/dado pessoal/upload/permissões,
+> preencha também docs/SECURITY-REVIEW.md e atualize docs/THREAT-MODEL.md
+> se o fluxo crítico mudou.
 ```
 
 Rode local:
@@ -232,6 +275,13 @@ make sec
 #   gitleaks detect --no-banner -v
 #   semgrep --config p/owasp-top-ten --error
 ```
+
+> **Importante**: lembre-se da distinção logs × auditoria.
+> - Erros, latência, requests → `/admin/logs` (skill 32 verifica que
+>   **não** vaza PII).
+> - Login, alteração de papel, export, exclusão → `/admin/audit-logs`
+>   (skill 32 verifica que esses **eventos foram emitidos**, com
+>   `actor/action/entity/before/after`).
 
 **Passo 6 — Commit + push + PR**
 
@@ -273,8 +323,17 @@ Independente do produto, o backlog **sempre** tem essas:
 | `T-CI-001` | Pipeline `ci.yml` + `security.yml` rodando | P0 |
 | `T-SEC-001` | Headers de segurança + CSP | P0 |
 | `T-SEC-002` | Auth (login/logout/refresh) + rate limit | P0 |
-| `T-MANUAL-001` | Tela `/manual` (spec em `docs/screens/`) | P0 |
-| `T-LOGS-001` | Tela `/admin/logs` (spec em `docs/screens/`) | P0 |
+| `T-MANUAL-001` | Tela `/manual` (manual do usuário) | P0 |
+| `T-LOGS-001` | Tela `/admin/logs` (logs **técnicos**) | P0 |
+| `T-AUDIT-001` | Tela `/admin/audit-logs` (auditoria, append-only) | P0 |
+
+Se houver dados pessoais, multi-tenant ou pagamento, somar:
+
+| ID | Descrição | Prioridade |
+|---|---|---|
+| `T-THREAT-001` | Threat model em `docs/THREAT-MODEL.md` | P0 |
+| `T-LGPD-001` | DPIA + direitos do titular em `docs/PRIVACY-LGPD.md` | P0 |
+| `T-RUNBOOK-001` | `docs/RUNBOOK.md` com deploy/rollback/incidente | P0 |
 
 Se elas não estão em `docs/backlog.md`, copie do template antes de começar.
 
@@ -290,11 +349,14 @@ Se elas não estão em `docs/backlog.md`, copie do template antes de começar.
 [ ] make test  → verde
 [ ] Cobertura do diff ≥ 80%
 [ ] make sec   → 0 finding High/Critical
-[ ] Sem PII em logs (revisei o que vai pra `/admin/logs`)
+[ ] Sem PII em /admin/logs (técnico)
+[ ] Eventos de auditoria emitidos para /admin/audit-logs quando aplicável
 [ ] CHANGELOG.md (Unreleased) atualizado
 [ ] /manual atualizado (se a tarefa expõe UI)
-[ ] /admin/logs continua passando smoke (se houver UI)
+[ ] /admin/logs e /admin/audit-logs continuam passando smoke (se houver UI)
 [ ] PR template marcado
+[ ] Se tocou fluxo crítico: SECURITY-REVIEW.md preenchido + THREAT-MODEL.md
+    revisado
 ```
 
 Os checklists completos estão em `docs/checklists/` — sirva-se à vontade.
@@ -327,12 +389,21 @@ Se quiser forçar um release agora: `Actions → Release → Run workflow`.
 
 ### 5.3 Pós-release (24h)
 
-A tela `/admin/logs` **vira o seu painel**:
-- Filtre `level=error` período "últimas 24h" — sem aumento esperado.
-- Filtre `category=security` — sem eventos novos suspeitos.
-- Métricas P95, taxa 5xx, alertas Sentry.
+A combinação `/admin/logs` + `/admin/audit-logs` **vira o seu painel**:
 
-Se algo passou despercebido: rollback (instruções no `RELEASE.md`).
+`/admin/logs` (técnico):
+- `level=error` últimas 24h — sem aumento esperado.
+- `category=security` — sem eventos técnicos suspeitos (rate-limit, csrf, mfa).
+
+`/admin/audit-logs` (ações):
+- `action=auth.login outcome=error` — sem pico anormal.
+- `action=data.export` ou `entity.delete` — todas justificadas?
+- Verificar cadeia de integridade (hash chain) na janela do release.
+
+Métricas P95, taxa 5xx, alertas Sentry.
+
+Se algo passou despercebido: **rollback** (passo a passo em
+`docs/RUNBOOK.md` §6 — alvo < 5 minutos).
 
 ---
 
@@ -353,6 +424,19 @@ Veja `README.md` §6.1 — falta ligar a flag em Settings ou criar
 Repo privado sem GHAS. Defina as variáveis:
 - `ENABLE_CODE_SCANNING_UPLOAD = false`
 - `ENABLE_CODEQL = false`
+
+### "Vi um aviso sobre `aquasecurity/trivy-action`"
+O template fixa `v0.35.0` por SHA imutável (`57a97c7e...`) — única versão
+não comprometida pela CVE-2026-33634 (supply chain attack de 2026-03-19).
+**Não** atualize para uma tag mais nova sem auditar o SHA do release. Se
+for forçoso atualizar, leia o advisory GHSA-69fq-xp46-6x23 e pine sempre
+por SHA, não por tag.
+
+### "Incidente de segurança real"
+Siga `docs/RUNBOOK.md` §12: detecção → triagem (30 min) → contenção
+(isolar/revogar) → erradicação (patch) → recuperação → postmortem.
+Se há dado pessoal afetado, prazo de notificação à ANPD é "razoável"
+(geralmente até 2 dias úteis) — `docs/PRIVACY-LGPD.md` §8.
 
 ### "Backlog inchou demais e perdi o controle"
 1. Releia `docs/PRD.md` § Escopo. Tudo que não atende objetivo do milestone
@@ -402,15 +486,23 @@ gh pr checks <pr-number>         # status dos checks
 ### Mapa mental do repo (cole na cabeça)
 
 ```
-.cursor/rules/   = skills do agente por fase (00 core, 10 plan, 20 proto,
-                   30 dev, 31 test, 32 sec, 40 release, 90 telas)
+.cursor/rules/   = skills do agente por fase
+                   00 core (sempre on), 10 plan, 20 proto,
+                   30 dev (manual), 31 test (por glob),
+                   32 sec (manual), 40 release, 90 telas (sempre on)
 docs/templates/  = formulários em branco — copie para docs/<nome>.md
+                   (PRD, SDD, backlog, RISKS, RELEASE,
+                    THREAT-MODEL, SECURITY-REVIEW, PRIVACY-LGPD,
+                    RUNBOOK, ADR, DoR, DoD, CHANGELOG)
 docs/checklists/ = listas que você marca antes do PR
-docs/screens/    = contrato das telas obrigatórias /manual e /admin/logs
+docs/screens/    = contrato das 3 telas obrigatórias:
+                     /manual, /admin/logs (técnico),
+                     /admin/audit-logs (auditoria)
 docs/prompts/    = prompts prontos pra colar no chat do Cursor
 docs/tooling.md  = quais MCPs/ferramentas usar em cada fase
 .github/         = CI/Sec/Release + templates de PR/issue
-scripts/         = automações (bootstrap)
+                   (Actions pinadas por SHA — defesa supply chain)
+scripts/         = automações (bootstrap .sh e .mjs)
 ```
 
 ---
@@ -419,12 +511,16 @@ scripts/         = automações (bootstrap)
 
 | Quando | Faça |
 |---|---|
-| Idéia nova | Bootstrap → PRD (prompt 01) → SDD (02) → backlog (03) |
+| Idéia nova | Bootstrap (`.mjs` ou `.sh`) → PRD (prompt 01) → SDD (02) → backlog (03) |
+| Se houver dado sensível | Preencher `THREAT-MODEL.md`, `PRIVACY-LGPD.md`, `RUNBOOK.md` |
 | Toda manhã | Pegar próxima tarefa P0/P1 do `backlog.md` |
 | Para cada tarefa | Branch → prompt 04 (dev) → 05 (test) → 06 (sec) → PR |
 | Antes do PR | Checklist §4 deste doc |
+| Tarefa sensível (auth/$/PII/upload) | Preencher `SECURITY-REVIEW.md` e atualizar `THREAT-MODEL.md` |
 | Fim do milestone | Prompt 07 → merge na `main` → release automático |
-| Toda segunda | Olhar `/admin/logs?category=security` da semana |
+| Toda segunda | `/admin/logs?category=security` (técnico) + `/admin/audit-logs` (ações) |
+| Trimestral | Rotacionar segredos (`RUNBOOK.md` §11), revisar Threat Model |
+| Em incidente | Seguir `RUNBOOK.md` §12 — não improvisar |
 
 Está tudo aqui no repo. Use, evolua, e abra PR melhorando este `USAGE.md`
 sempre que descobrir um atalho novo.
